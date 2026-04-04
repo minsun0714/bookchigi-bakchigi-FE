@@ -2,18 +2,27 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/hooks/useAuth";
 
-const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const GOOGLE_LOGIN_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 
 export default function Header() {
   const navigate = useNavigate();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, token, logout } = useAuth();
 
   const handleLogin = () => {
     sessionStorage.setItem("redirect_after_login", window.location.pathname);
     window.location.href = GOOGLE_LOGIN_URL;
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      // 로그아웃 요청 실패해도 로컬 토큰은 삭제
+    }
     logout();
     navigate("/");
   };
