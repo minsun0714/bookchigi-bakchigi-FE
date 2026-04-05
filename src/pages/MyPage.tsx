@@ -1,15 +1,18 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BookOpenIcon,
+  CheckIcon,
   ChevronDownIcon,
   ClockIcon,
   CrownIcon,
   EyeIcon,
   MoreVerticalIcon,
+  PencilIcon,
   SettingsIcon,
   Trash2Icon,
   UserIcon,
   UsersIcon,
+  XIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -18,7 +21,7 @@ import type { MyStudy } from "@/api/studies";
 import { toast } from "sonner";
 
 import { deleteStudy, fetchMyStudies } from "@/api/studies";
-import { fetchMe } from "@/api/user";
+import { fetchMe, updateNickname } from "@/api/user";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -270,10 +273,34 @@ function MyStudySection({
 }
 
 export default function MyPage() {
+  const queryClient = useQueryClient();
   const { data: user } = useQuery({
     queryKey: ["me"],
     queryFn: fetchMe,
   });
+
+  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState("");
+
+  const nicknameMutation = useMutation({
+    mutationFn: () => updateNickname(nicknameInput),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      setIsEditingNickname(false);
+      toast.success("닉네임이 변경되었습니다");
+    },
+    onError: () => toast.error("닉네임 변경에 실패했습니다"),
+  });
+
+  const startEditNickname = () => {
+    setNicknameInput(user?.nickname ?? "");
+    setIsEditingNickname(true);
+  };
+
+  const submitNickname = () => {
+    if (!nicknameInput.trim()) return;
+    nicknameMutation.mutate();
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
@@ -291,9 +318,48 @@ export default function MyPage() {
           </div>
         )}
         <div>
-          <h1 className="text-foreground m-0 text-2xl font-bold tracking-tight">
-            {user?.nickname ?? "마이페이지"}
-          </h1>
+          {isEditingNickname ? (
+            <div className="flex items-center gap-1.5">
+              <input
+                type="text"
+                value={nicknameInput}
+                onChange={(e) => setNicknameInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && submitNickname()}
+                className="border-input bg-background focus:ring-ring/50 h-9 rounded-lg border px-3 text-lg font-bold outline-none focus:ring-2"
+                autoFocus
+              />
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={submitNickname}
+                disabled={nicknameMutation.isPending}
+                className="text-emerald-600"
+              >
+                <CheckIcon className="size-4" />
+              </Button>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => setIsEditingNickname(false)}
+              >
+                <XIcon className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <h1 className="text-foreground m-0 text-2xl font-bold tracking-tight">
+                {user?.nickname ?? "마이페이지"}
+              </h1>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={startEditNickname}
+                className="text-muted-foreground"
+              >
+                <PencilIcon className="size-3.5" />
+              </Button>
+            </div>
+          )}
           {user?.email && (
             <p className="text-muted-foreground mt-0.5 text-sm">{user.email}</p>
           )}
