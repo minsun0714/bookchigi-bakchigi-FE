@@ -1,4 +1,4 @@
-import type { PageResponse } from "@/api/books";
+import type { Book, PageResponse } from "@/api/books";
 import client from "@/api/client";
 
 export interface Study {
@@ -11,6 +11,10 @@ export interface Study {
   isPublic: boolean;
   creatorNickname: string;
   createdAt: string;
+}
+
+export interface StudyDetail extends Study {
+  book: Book;
 }
 
 export interface StudyCreateRequest {
@@ -31,6 +35,11 @@ export async function fetchStudies(
     `/books/${isbn}/studies`,
     { params: { page: page || 0, size } },
   );
+  return res.data;
+}
+
+export async function fetchStudy(studyId: number): Promise<StudyDetail> {
+  const res = await client.get<StudyDetail>(`/studies/${studyId}`);
   return res.data;
 }
 

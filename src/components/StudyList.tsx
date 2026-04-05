@@ -9,7 +9,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import Markdown from "react-markdown";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { fetchStudies } from "@/api/studies";
 import BookPagination from "@/components/BookPagination";
@@ -69,11 +69,13 @@ export default function StudyList({ isbn }: StudyListProps) {
   return (
     <div className="flex flex-col gap-3">
       {data.content.map((study) => (
-        <Card
+        <Link
           key={study.id}
-          className="transition-all hover:-translate-y-0.5 hover:shadow-md"
+          to={`/studies/${study.id}`}
+          className="no-underline"
         >
-          <CardContent className="p-5">
+          <Card className="transition-all hover:-translate-y-0.5 hover:shadow-md">
+            <CardContent className="p-5">
             <div className="flex items-start justify-between gap-2">
               <h4 className="text-foreground text-base font-semibold">
                 {study.name}
@@ -114,7 +116,8 @@ export default function StudyList({ isbn }: StudyListProps) {
               </span>
             </div>
           </CardContent>
-        </Card>
+          </Card>
+        </Link>
       ))}
       <BookPagination
         currentPage={data.page}
