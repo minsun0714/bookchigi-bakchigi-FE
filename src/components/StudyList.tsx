@@ -8,7 +8,6 @@ import {
   UserIcon,
   UsersIcon,
 } from "lucide-react";
-import Markdown from "react-markdown";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { fetchStudies } from "@/api/studies";
@@ -99,11 +98,6 @@ export default function StudyList({ isbn }: StudyListProps) {
                 </span>
               </div>
             </div>
-            {study.description && (
-              <div className="text-muted-foreground prose prose-sm dark:prose-invert mt-2 line-clamp-2 max-w-none">
-                <Markdown>{study.description}</Markdown>
-              </div>
-            )}
             <div className="text-muted-foreground mt-3 flex flex-wrap gap-4 text-xs">
               <span className="inline-flex items-center gap-1">
                 <UserIcon className="size-3.5" />
