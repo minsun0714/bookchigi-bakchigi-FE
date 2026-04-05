@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
+
 import type { Book } from "@/api/books";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 interface BookCardProps {
   book: Book;
@@ -7,24 +9,27 @@ interface BookCardProps {
 
 export default function BookCard({ book }: BookCardProps) {
   return (
-    <Card className="transition-shadow hover:shadow-md">
-      <CardContent className="flex flex-col p-4">
-        <img
-          src={book.image}
-          alt={book.title}
-          className="mx-auto h-48 w-auto rounded-md object-contain"
-        />
-        <div className="mt-3 flex min-w-0 flex-col text-left">
-          <h3 className="truncate text-base font-semibold">{book.title}</h3>
-          <p className="text-muted-foreground mt-1 text-sm">
+    <Link to={`/books/${book.isbn}`} className="group no-underline">
+      <Card className="h-full overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg">
+        <div className="bg-muted/50 flex items-center justify-center p-6">
+          <img
+            src={book.image}
+            alt={book.title}
+            className="h-44 w-auto rounded object-contain drop-shadow-md transition-transform group-hover:scale-105"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5 p-4">
+          <h3 className="text-foreground truncate text-sm font-semibold">
+            {book.title}
+          </h3>
+          <p className="text-muted-foreground truncate text-xs">
             {book.author} · {book.publisher}
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">{book.pubDate}</p>
-          <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-relaxed">
+          <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed">
             {book.description}
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </Card>
+    </Link>
   );
 }
