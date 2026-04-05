@@ -1,4 +1,4 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 const TOKEN_KEY = "access_token";
 
@@ -20,15 +20,15 @@ function notify() {
 export function useAuth() {
   const token = useSyncExternalStore(subscribe, getSnapshot);
 
-  const login = useCallback((accessToken: string) => {
+  const login = (accessToken: string) => {
     localStorage.setItem(TOKEN_KEY, accessToken);
     notify();
-  }, []);
+  };
 
-  const logout = useCallback(() => {
+  const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     notify();
-  }, []);
+  };
 
   return {
     isLoggedIn: !!token,
