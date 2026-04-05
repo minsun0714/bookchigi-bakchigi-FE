@@ -40,7 +40,7 @@ export default function StudyMemberCard({
             <div
               key={userId}
               className={`flex items-center gap-3 rounded-xl px-4 py-3 ${
-                isLeader ? "bg-amber-50/50 dark:bg-amber-950/20" : "bg-muted/40"
+                isLeader ? "col-span-full bg-amber-50/50 dark:bg-amber-950/20" : "bg-muted/40"
               }`}
             >
               <div
