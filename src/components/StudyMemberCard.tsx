@@ -1,4 +1,4 @@
-import { UserPlusIcon, UsersIcon } from "lucide-react";
+import { CrownIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 import type { UseMutationResult } from "@tanstack/react-query";
 
 import type { StudyDetail } from "@/api/studies";
@@ -22,34 +22,57 @@ export default function StudyMemberCard({
   return (
     <Card>
       <CardContent className="p-6">
-        <h2 className="text-foreground m-0 mb-4 flex items-center gap-2 text-base font-semibold">
-          <UsersIcon className="size-4" />
-          멤버 ({members.length}/{maxMembers})
-        </h2>
-        <div className="flex flex-col gap-2">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-foreground m-0 flex items-center gap-2 text-base font-semibold">
+            <UsersIcon className="size-4" />
+            멤버
+          </h2>
+          <span className="text-muted-foreground text-sm">
+            {members.length}
+            <span className="mx-0.5">/</span>
+            {maxMembers}
+          </span>
+        </div>
+
+        {/* 멤버 그리드 */}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {members.map(({ userId, nickname, isLeader }) => (
             <div
               key={userId}
-              className="flex items-center justify-between rounded-lg border px-4 py-3"
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 ${
+                isLeader ? "bg-amber-50/50 dark:bg-amber-950/20" : "bg-muted/40"
+              }`}
             >
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-full text-sm font-medium">
-                  {nickname.charAt(0)}
-                </div>
-                <span className="text-foreground text-sm font-medium">
+              <div
+                className={`flex size-9 items-center justify-center rounded-full text-sm font-semibold ${
+                  isLeader
+                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                    : "bg-primary/10 text-primary"
+                }`}
+              >
+                {isLeader ? (
+                  <CrownIcon className="size-4" />
+                ) : (
+                  nickname.charAt(0)
+                )}
+              </div>
+              <div className="flex min-w-0 flex-col">
+                <span className="text-foreground truncate text-sm font-medium">
                   {nickname}
                 </span>
+                <span className="text-muted-foreground text-[11px]">
+                  {isLeader ? "방장" : "멤버"}
+                </span>
               </div>
-              <span className="text-muted-foreground text-xs">
-                {isLeader ? "방장" : "멤버"}
-              </span>
             </div>
           ))}
         </div>
 
+        {/* 합류 버튼 */}
         {!isCurrentUserMember && (
           <Button
-            className="mt-4 w-full"
+            className="mt-5 w-full"
+            size="lg"
             onClick={onJoin}
             disabled={isPending}
           >
@@ -58,12 +81,12 @@ export default function StudyMemberCard({
           </Button>
         )}
         {isSuccess && (
-          <p className="mt-2 text-center text-sm text-emerald-600">
+          <p className="mt-3 text-center text-sm text-emerald-600">
             합류 신청이 완료되었습니다
           </p>
         )}
         {isError && (
-          <p className="text-destructive mt-2 text-center text-sm">
+          <p className="text-destructive mt-3 text-center text-sm">
             합류 신청에 실패했습니다
           </p>
         )}

@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import {
+  BookOpenIcon,
   CalendarIcon,
   GlobeIcon,
   LockIcon,
@@ -10,12 +11,10 @@ import {
 import Markdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 
-import { BookOpenIcon } from "lucide-react";
-
 import type { StudyDetail } from "@/api/studies";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 
 function formatDateTime(iso: string) {
   return format(new Date(iso), "yyyy.MM.dd (EEE) HH:mm", { locale: ko });
@@ -44,44 +43,46 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
 
   return (
     <Card className="overflow-hidden">
-      {/* 책 정보 */}
-      <div className="flex items-center gap-4 border-b p-5">
-        <div className="bg-muted/50 flex shrink-0 items-center justify-center rounded-lg p-3">
+      {/* 책 표지 + 스터디 헤더 */}
+      <div className="bg-muted/30 flex flex-col items-center gap-5 px-6 pt-8 pb-6 sm:flex-row sm:items-start">
+        <div className="shrink-0">
           {book.image ? (
             <img
               src={book.image}
               alt={book.title}
-              className="h-16 w-auto rounded object-contain"
+              className="h-40 w-auto rounded-lg object-contain drop-shadow-lg"
             />
           ) : (
-            <BookOpenIcon className="text-muted-foreground size-10" />
+            <div className="bg-muted flex h-40 w-28 items-center justify-center rounded-lg">
+              <BookOpenIcon className="text-muted-foreground size-10" />
+            </div>
           )}
         </div>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="text-foreground truncate text-sm font-semibold">
-            {book.title}
-          </p>
-          <p className="text-muted-foreground truncate text-xs">
-            {book.author} · {book.publisher}
-          </p>
-        </div>
-      </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-2 text-center sm:text-left">
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-foreground m-0 text-xl font-bold tracking-tight">
+                {name}
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                {book.title} · {book.author}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
+              {isCurrentUserLeader && (
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => navigate(`/studies/${id}/edit`)}
+                >
+                  <SettingsIcon className="size-4" />
+                </Button>
+              )}
+            </div>
+          </div>
 
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className="text-foreground m-0 text-xl font-bold tracking-tight">
-            {name}
-          </h1>
-          <div className="flex shrink-0 items-center gap-2">
-            {isCurrentUserLeader && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => navigate(`/studies/${id}/edit`)}
-              >
-                <SettingsIcon className="size-4" />
-              </Button>
-            )}
+          <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+            <EnrollmentStatusBadge status={enrollmentStatus} />
             <span
               className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
                 isPublic
@@ -96,40 +97,32 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
               )}
               {isPublic ? "공개" : "비공개"}
             </span>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-          <EnrollmentStatusBadge status={enrollmentStatus} />
-          <span className="text-muted-foreground inline-flex items-center gap-1.5">
-            <UsersIcon className="size-4" />
-            {members.length} / {maxMembers}명
-          </span>
-        </div>
-
-        {enrollmentStart && enrollmentEnd && (
-          <div className="bg-muted/50 mt-4 flex items-center gap-2 rounded-lg px-4 py-3 text-sm">
-            <CalendarIcon className="text-muted-foreground size-4 shrink-0" />
-            <span>
-              <span className="text-muted-foreground">모집 기간</span>{" "}
-              <span className="text-foreground font-medium">
-                {formatDateTime(enrollmentStart)} ~{" "}
-                {formatDateTime(enrollmentEnd)}
-              </span>
+            <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+              <UsersIcon className="size-3.5" />
+              {members.length}/{maxMembers}명
             </span>
           </div>
-        )}
 
-        {description && (
-          <div className="prose prose-sm dark:prose-invert mt-5 max-w-none border-t pt-5">
-            <Markdown>{description}</Markdown>
-          </div>
-        )}
+          {enrollmentStart && enrollmentEnd && (
+            <div className="text-muted-foreground mt-1 inline-flex items-center justify-center gap-1.5 text-xs sm:justify-start">
+              <CalendarIcon className="size-3.5 shrink-0" />
+              {formatDateTime(enrollmentStart)} ~ {formatDateTime(enrollmentEnd)}
+            </div>
+          )}
+        </div>
+      </div>
 
-        <p className="text-muted-foreground mt-4 text-xs">
-          생성일: {formatDateTime(createdAt)}
-        </p>
-      </CardContent>
+      {/* 설명 */}
+      {description && (
+        <div className="prose prose-sm dark:prose-invert max-w-none border-t px-6 py-5">
+          <Markdown>{description}</Markdown>
+        </div>
+      )}
+
+      {/* 푸터 */}
+      <div className="text-muted-foreground border-t px-6 py-3 text-xs">
+        생성일: {formatDateTime(createdAt)}
+      </div>
     </Card>
   );
 }
