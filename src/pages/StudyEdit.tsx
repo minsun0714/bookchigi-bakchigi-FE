@@ -21,7 +21,7 @@ export default function StudyEdit() {
   if (!studyId) return null;
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8">
       <Button
         variant="ghost"
         size="sm"

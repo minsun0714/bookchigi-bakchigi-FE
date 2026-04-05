@@ -110,8 +110,8 @@ export default function StudyFormFields({
               value={description}
               onChange={(e) => onChange({ description: e.target.value })}
               placeholder="스터디 목표, 진행 방식 등을 적어주세요. Markdown을 지원합니다."
-              rows={6}
-              className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2"
+              rows={15}
+              className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 min-h-72 rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2"
             />
           </div>
 

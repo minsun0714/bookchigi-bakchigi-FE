@@ -201,7 +201,7 @@ function MyStudySection({
 
 export default function MyPage() {
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
       <h1 className="text-foreground m-0 text-2xl font-bold tracking-tight">
         마이페이지
       </h1>

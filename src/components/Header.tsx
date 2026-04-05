@@ -39,7 +39,7 @@ export default function Header() {
         <Link to="/" className="flex items-center gap-2 no-underline">
           <BookOpenIcon className="text-primary size-6" />
           <span className="text-foreground text-lg font-bold tracking-tight">
-            북치기 박치기
+            북치기박치기
           </span>
         </Link>
 
