@@ -6,6 +6,7 @@ import {
   ClockIcon,
   CrownIcon,
   EyeIcon,
+  LogOutIcon,
   MoreVerticalIcon,
   PencilIcon,
   SettingsIcon,
@@ -20,7 +21,7 @@ import { Link, useNavigate } from "react-router-dom";
 import type { MyStudy } from "@/api/studies";
 import { toast } from "sonner";
 
-import { deleteStudy, fetchMyStudies } from "@/api/studies";
+import { deleteStudy, fetchMyStudies, fetchStudy, leaveStudy } from "@/api/studies";
 import { fetchMe, updateNickname } from "@/api/user";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
@@ -43,15 +44,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function StudyCard({
   study,
-  showManage,
+  role,
 }: {
   study: MyStudy;
-  showManage: boolean;
+  role: "LEADER" | "MEMBER" | "PENDING";
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [nextLeaderId, setNextLeaderId] = useState<number | undefined>();
   const { id, name, book, enrollmentStatus } = study;
 
   const deleteMutation = useMutation({
@@ -63,6 +66,30 @@ function StudyCard({
     },
     onError: () => toast.error("스터디 삭제에 실패했습니다"),
   });
+
+  const { data: studyDetail } = useQuery({
+    queryKey: ["study", String(id)],
+    queryFn: () => fetchStudy(id),
+    enabled: showLeaveDialog,
+  });
+
+  const otherMembers = studyDetail?.members.filter((m) => !m.isLeader) ?? [];
+  const isOnlyMember = role === "LEADER" && otherMembers.length === 0;
+
+  const leaveMutation = useMutation({
+    mutationFn: () => leaveStudy(id, nextLeaderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myStudies"] });
+      setShowLeaveDialog(false);
+      toast.success("스터디에서 탈퇴했습니다");
+    },
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      toast.error(axiosError.response?.data?.message ?? "탈퇴에 실패했습니다");
+    },
+  });
+
+  const showDropdown = role === "LEADER" || role === "MEMBER";
 
   return (
     <div className="relative">
@@ -89,12 +116,12 @@ function StudyCard({
                 {book.title}
               </span>
             </div>
-            {showManage && <div className="w-8 shrink-0" />}
+            {showDropdown && <div className="w-8 shrink-0" />}
           </CardContent>
         </Card>
       </Link>
 
-      {showManage && (
+      {showDropdown && (
         <div className="absolute right-4 top-1/2 -translate-y-1/2">
           <DropdownMenu>
             <DropdownMenuTrigger className="text-muted-foreground hover:text-foreground flex size-8 items-center justify-center rounded-md transition-colors hover:bg-muted focus:outline-none">
@@ -108,35 +135,61 @@ function StudyCard({
                 <EyeIcon className="size-4" />
                 상세보기
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="gap-2 px-3 py-2"
-                onClick={() => navigate(`/studies/${id}/edit`)}
-              >
-                <SettingsIcon className="size-4" />
-                수정
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="gap-2 px-3 py-2"
-                onClick={() => navigate(`/studies/${id}/members`)}
-              >
-                <UsersIcon className="size-4" />
-                멤버 관리
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="gap-2 px-3 py-2"
-                variant="destructive"
-                onClick={() => setShowDeleteDialog(true)}
-              >
-                <Trash2Icon className="size-4" />
-                삭제
-              </DropdownMenuItem>
+              {role === "LEADER" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="gap-2 px-3 py-2"
+                    onClick={() => navigate(`/studies/${id}/edit`)}
+                  >
+                    <SettingsIcon className="size-4" />
+                    수정
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 px-3 py-2"
+                    onClick={() => navigate(`/studies/${id}/members`)}
+                  >
+                    <UsersIcon className="size-4" />
+                    멤버 관리
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="gap-2 px-3 py-2"
+                    variant="destructive"
+                    onClick={() => setShowLeaveDialog(true)}
+                  >
+                    <LogOutIcon className="size-4" />
+                    탈퇴
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 px-3 py-2"
+                    variant="destructive"
+                    onClick={() => setShowDeleteDialog(true)}
+                  >
+                    <Trash2Icon className="size-4" />
+                    삭제
+                  </DropdownMenuItem>
+                </>
+              )}
+              {role === "MEMBER" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="gap-2 px-3 py-2"
+                    variant="destructive"
+                    onClick={() => setShowLeaveDialog(true)}
+                  >
+                    <LogOutIcon className="size-4" />
+                    탈퇴
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       )}
 
+      {/* 삭제 확인 모달 */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
@@ -177,6 +230,104 @@ function StudyCard({
               disabled={deleteConfirm !== name || deleteMutation.isPending}
             >
               {deleteMutation.isPending ? "삭제 중..." : "삭제"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 탈퇴 확인 모달 */}
+      <Dialog
+        open={showLeaveDialog}
+        onOpenChange={(open) => {
+          setShowLeaveDialog(open);
+          if (!open) setNextLeaderId(undefined);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
+            <DialogTitle className="flex items-center gap-2">
+              <LogOutIcon className="size-5" />
+              {isOnlyMember ? "스터디 삭제" : "스터디 탈퇴"}
+            </DialogTitle>
+          </DialogHeader>
+
+          {isOnlyMember ? (
+            <div className="py-4 text-center">
+              <p className="text-foreground text-sm font-medium">
+                유일한 멤버이므로 탈퇴하면 스터디가 삭제됩니다
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                정말 삭제하시겠습니까?
+              </p>
+            </div>
+          ) : role === "LEADER" && otherMembers.length > 0 ? (
+            <div className="flex flex-col gap-4 py-2">
+              <p className="text-muted-foreground text-sm">
+                방장은 탈퇴 전 다음 방장을 지정해야 합니다.
+              </p>
+              <div className="flex flex-col gap-2">
+                {otherMembers.map(({ userId, nickname }) => (
+                  <label
+                    key={userId}
+                    className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${
+                      nextLeaderId === userId
+                        ? "border-primary bg-primary/5"
+                        : "hover:bg-muted/50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="nextLeader"
+                      checked={nextLeaderId === userId}
+                      onChange={() => setNextLeaderId(userId)}
+                      className="accent-primary size-4"
+                    />
+                    <div className="bg-primary/10 text-primary flex size-7 items-center justify-center rounded-full text-xs font-semibold">
+                      {nickname.charAt(0)}
+                    </div>
+                    <span className="text-foreground text-sm">{nickname}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="py-4 text-center">
+              <p className="text-foreground text-sm font-medium">
+                정말 스터디에서 탈퇴하시겠습니까?
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                탈퇴하면 다시 합류 신청이 필요합니다
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowLeaveDialog(false);
+                setNextLeaderId(undefined);
+              }}
+            >
+              취소
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => leaveMutation.mutate()}
+              disabled={
+                leaveMutation.isPending ||
+                (role === "LEADER" &&
+                  otherMembers.length > 0 &&
+                  !nextLeaderId)
+              }
+            >
+              {leaveMutation.isPending
+                ? isOnlyMember
+                  ? "삭제 중..."
+                  : "탈퇴 중..."
+                : isOnlyMember
+                  ? "삭제"
+                  : "탈퇴"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -252,7 +403,7 @@ function MyStudySection({
             <StudyCard
               key={study.id}
               study={study}
-              showManage={role === "LEADER"}
+              role={role}
             />
           ))}
           {hasNextPage && (

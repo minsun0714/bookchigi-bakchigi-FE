@@ -121,6 +121,15 @@ export async function rejectMember(
   await client.post(`/studies/${studyId}/members/${userId}/reject`);
 }
 
+export async function leaveStudy(
+  studyId: number,
+  nextLeaderId?: number,
+): Promise<void> {
+  await client.post(`/studies/${studyId}/leave`, null, {
+    params: nextLeaderId ? { nextLeaderId } : {},
+  });
+}
+
 export async function deleteStudy(studyId: number): Promise<void> {
   await client.delete(`/studies/${studyId}`);
 }

@@ -34,13 +34,14 @@ export default function StudyMemberCard({
           </span>
         </div>
 
-        {/* 멤버 그리드 */}
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {members.map(({ userId, nickname, isLeader }) => (
             <div
               key={userId}
               className={`flex items-center gap-3 rounded-xl px-4 py-3 ${
-                isLeader ? "col-span-full bg-amber-50/50 dark:bg-amber-950/20" : "bg-muted/40"
+                isLeader
+                  ? "col-span-full bg-amber-50/50 dark:bg-amber-950/20"
+                  : "bg-muted/40"
               }`}
             >
               <div
@@ -68,7 +69,6 @@ export default function StudyMemberCard({
           ))}
         </div>
 
-        {/* 합류 버튼 */}
         {!isCurrentUserMember && (
           <Button
             className="mt-5 w-full"
