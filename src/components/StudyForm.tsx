@@ -85,7 +85,6 @@ export default function StudyForm({
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
-  const [isMarkdown, setIsMarkdown] = useState(false);
   const [maxMembers, setMaxMembers] = useState(initialData?.maxMembers ?? 4);
   const [enrollmentStart, setEnrollmentStart] = useState<Date | undefined>(
     parseDate(initialData?.enrollmentStart),
@@ -171,55 +170,41 @@ export default function StudyForm({
           {/* 설명 */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-foreground text-sm font-medium">
+              <label className="text-foreground flex items-center gap-1.5 text-sm font-medium">
                 설명
+                <span className="text-muted-foreground text-xs font-normal">
+                  (Markdown 지원)
+                </span>
               </label>
-              <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 text-xs">
-                  <input
-                    type="checkbox"
-                    checked={isMarkdown}
-                    onChange={(e) => setIsMarkdown(e.target.checked)}
-                    className="accent-primary size-3.5"
-                  />
-                  <span className="text-muted-foreground">Markdown</span>
-                </label>
-                {isMarkdown && (
-                  <Dialog>
-                    <DialogTrigger>
-                      <Button type="button" variant="ghost" size="xs">
-                        <EyeIcon className="size-3.5" />
-                        미리보기
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-2xl">
-                      <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
-                        <DialogTitle>Markdown 미리보기</DialogTitle>
-                      </DialogHeader>
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        {description ? (
-                          <Markdown>{description}</Markdown>
-                        ) : (
-                          <p className="text-muted-foreground italic">
-                            미리볼 내용이 없습니다
-                          </p>
-                        )}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                )}
-              </div>
+              <Dialog>
+                <DialogTrigger>
+                  <Button type="button" variant="ghost" size="xs">
+                    <EyeIcon className="size-3.5" />
+                    미리보기
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-h-[80vh] min-h-0 overflow-y-auto sm:max-w-2xl">
+                  <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
+                    <DialogTitle>미리보기</DialogTitle>
+                  </DialogHeader>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    {description ? (
+                      <Markdown>{description}</Markdown>
+                    ) : (
+                      <p className="text-muted-foreground italic">
+                        미리볼 내용이 없습니다
+                      </p>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={
-                isMarkdown
-                  ? "# 제목\n\n**굵게**, *기울임*, `코드` 등 Markdown 문법을 사용할 수 있습니다"
-                  : "스터디 목표, 진행 방식 등을 적어주세요"
-              }
+              placeholder="스터디 목표, 진행 방식 등을 적어주세요. Markdown을 지원합니다."
               rows={6}
-              className={`border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2 ${isMarkdown ? "font-mono" : ""}`}
+              className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2"
             />
           </div>
 
