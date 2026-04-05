@@ -1,8 +1,15 @@
-import { BookOpenIcon } from "lucide-react";
+import { BookOpenIcon, LogOutIcon, UserCircleIcon, UserIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import client from "@/api/client";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 
 const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`;
@@ -37,9 +44,31 @@ export default function Header() {
         </Link>
 
         {isLoggedIn ? (
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            로그아웃
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="focus:outline-none">
+              <div className="bg-muted text-foreground flex size-9 items-center justify-center rounded-full transition-colors hover:bg-muted/70">
+                <UserIcon className="size-5" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="!w-48">
+              <DropdownMenuItem
+                className="gap-2 px-3 py-2.5"
+                onClick={() => navigate("/mypage")}
+              >
+                <UserCircleIcon className="size-4" />
+                마이페이지
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="gap-2 px-3 py-2.5"
+                variant="destructive"
+                onClick={handleLogout}
+              >
+                <LogOutIcon className="size-4" />
+                로그아웃
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <Button size="sm" onClick={handleLogin}>
             <GoogleIcon />
