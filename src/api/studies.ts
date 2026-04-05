@@ -54,7 +54,7 @@ export interface MyStudy {
 }
 
 export async function fetchMyStudies(
-  role: "LEADER" | "MEMBER",
+  role: "LEADER" | "MEMBER" | "PENDING",
   page: number,
   size: number = 10,
 ): Promise<PageResponse<MyStudy>> {
