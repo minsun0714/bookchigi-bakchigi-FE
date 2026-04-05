@@ -15,11 +15,11 @@ export default function StudyCreate() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(`/books/${isbn}`)}
         className="self-start"
       >
         <ArrowLeftIcon className="size-4" />
-        돌아가기
+        책 상세로
       </Button>
       <div>
         <h1 className="text-foreground m-0 text-xl font-bold tracking-tight">

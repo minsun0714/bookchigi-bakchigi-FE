@@ -31,11 +31,11 @@ export default function StudyMembers() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(`/studies/${studyId}`)}
         className="self-start"
       >
         <ArrowLeftIcon className="size-4" />
-        돌아가기
+        스터디 상세로
       </Button>
 
       <div>

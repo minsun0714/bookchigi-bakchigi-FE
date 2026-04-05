@@ -47,11 +47,11 @@ export default function BookDetail() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/")}
         className="self-start"
       >
         <ArrowLeftIcon className="size-4" />
-        돌아가기
+        검색으로
       </Button>
 
       <Card className="max-w-full overflow-hidden">

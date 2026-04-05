@@ -116,11 +116,13 @@ export default function StudyDetail() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => navigate(-1)}
+        onClick={() =>
+          study ? navigate(`/books/${study.book.isbn}`) : navigate(-1)
+        }
         className="self-start"
       >
         <ArrowLeftIcon className="size-4" />
-        돌아가기
+        {study ? "책 상세로" : "돌아가기"}
       </Button>
 
       {isLoading ? (

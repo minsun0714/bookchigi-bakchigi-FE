@@ -25,11 +25,11 @@ export default function StudyEdit() {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(`/studies/${studyId}`)}
         className="self-start"
       >
         <ArrowLeftIcon className="size-4" />
-        돌아가기
+        스터디 상세로
       </Button>
       <div>
         <h1 className="text-foreground m-0 text-xl font-bold tracking-tight">
