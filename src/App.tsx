@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import OAuthCallback from "@/pages/OAuthCallback";
 import StudyCreate from "@/pages/StudyCreate";
 import StudyDetail from "@/pages/StudyDetail";
+import StudyEdit from "@/pages/StudyEdit";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/books/:isbn" element={<BookDetail />} />
         <Route path="/books/:isbn/studies/new" element={<StudyCreate />} />
         <Route path="/studies/:studyId" element={<StudyDetail />} />
+        <Route path="/studies/:studyId/edit" element={<StudyEdit />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
       </Routes>
     </BrowserRouter>

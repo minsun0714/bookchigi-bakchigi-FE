@@ -7,7 +7,12 @@ import Markdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-import { createStudy } from "@/api/studies";
+import {
+  createStudy,
+  type StudyCreateRequest,
+  type StudyDetail,
+  updateStudy,
+} from "@/api/studies";
 import DatePicker from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,13 +33,17 @@ const schema = z
     enrollmentStart: z.date().optional(),
     enrollmentEnd: z.date().optional(),
   })
-  .refine((d) => {
-    if (d.enrollmentStart && d.enrollmentEnd) return d.enrollmentEnd >= d.enrollmentStart;
-    return true;
-  }, {
-    message: "마감일은 시작일 이후여야 합니다",
-    path: ["enrollmentEnd"],
-  });
+  .refine(
+    (d) => {
+      if (d.enrollmentStart && d.enrollmentEnd)
+        return d.enrollmentEnd >= d.enrollmentStart;
+      return true;
+    },
+    {
+      message: "마감일은 시작일 이후여야 합니다",
+      path: ["enrollmentEnd"],
+    },
+  );
 
 type FieldErrors = Partial<Record<string, string>>;
 
@@ -54,22 +63,43 @@ function getErrors(data: {
   return errors;
 }
 
-interface StudyCreateFormProps {
-  isbn: string;
+function parseDate(value: string | undefined | null): Date | undefined {
+  if (!value) return undefined;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? undefined : d;
 }
 
-export default function StudyCreateForm({ isbn }: StudyCreateFormProps) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+interface StudyFormProps {
+  isbn: string;
+  studyId?: number;
+  initialData?: StudyDetail;
+}
+
+export default function StudyForm({
+  isbn,
+  studyId,
+  initialData,
+}: StudyFormProps) {
+  const isEdit = !!studyId;
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [description, setDescription] = useState(
+    initialData?.description ?? "",
+  );
   const [isMarkdown, setIsMarkdown] = useState(false);
-  const [maxMembers, setMaxMembers] = useState(4);
-  const [enrollmentStart, setEnrollmentStart] = useState<Date>();
-  const [enrollmentEnd, setEnrollmentEnd] = useState<Date>();
-  const [isPublic, setIsPublic] = useState(true);
+  const [maxMembers, setMaxMembers] = useState(initialData?.maxMembers ?? 4);
+  const [enrollmentStart, setEnrollmentStart] = useState<Date | undefined>(
+    parseDate(initialData?.enrollmentStart),
+  );
+  const [enrollmentEnd, setEnrollmentEnd] = useState<Date | undefined>(
+    parseDate(initialData?.enrollmentEnd),
+  );
+  const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? true);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState(false);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const formData = { name, maxMembers, enrollmentStart, enrollmentEnd };
 
   const revalidate = (overrides?: Partial<typeof formData>) => {
     if (!touched) return;
@@ -77,21 +107,32 @@ export default function StudyCreateForm({ isbn }: StudyCreateFormProps) {
     setErrors(getErrors(data));
   };
 
-  const formData = { name, maxMembers, enrollmentStart, enrollmentEnd };
+  const buildRequest = (): StudyCreateRequest => ({
+    name,
+    description,
+    maxMembers,
+    enrollmentStart: enrollmentStart
+      ? format(enrollmentStart, "yyyy-MM-dd'T'HH:mm:ss")
+      : "",
+    enrollmentEnd: enrollmentEnd
+      ? format(enrollmentEnd, "yyyy-MM-dd'T'HH:mm:ss")
+      : "",
+    isPublic,
+  });
 
   const mutation = useMutation({
     mutationFn: () =>
-      createStudy(isbn, {
-        name,
-        description,
-        maxMembers,
-        enrollmentStart: enrollmentStart ? format(enrollmentStart, "yyyy-MM-dd'T'HH:mm:ss") : "",
-        enrollmentEnd: enrollmentEnd ? format(enrollmentEnd, "yyyy-MM-dd'T'HH:mm:ss") : "",
-        isPublic,
-      }),
+      isEdit
+        ? updateStudy(studyId!, buildRequest())
+        : createStudy(isbn, buildRequest()),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["studies", isbn] });
-      navigate(`/books/${isbn}`);
+      if (isEdit) {
+        queryClient.invalidateQueries({ queryKey: ["study", String(studyId)] });
+        navigate(`/studies/${studyId}`);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["studies", isbn] });
+        navigate(`/books/${isbn}`);
+      }
     },
   });
 
@@ -265,7 +306,13 @@ export default function StudyCreateForm({ isbn }: StudyCreateFormProps) {
               취소
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "등록 중..." : "스터디 등록"}
+              {mutation.isPending
+                ? isEdit
+                  ? "수정 중..."
+                  : "등록 중..."
+                : isEdit
+                  ? "스터디 수정"
+                  : "스터디 등록"}
             </Button>
           </div>
         </form>

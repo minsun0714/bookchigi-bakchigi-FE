@@ -2,7 +2,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import StudyCreateForm from "@/components/StudyCreateForm";
+import StudyForm from "@/components/StudyForm";
 
 export default function StudyCreate() {
   const { isbn } = useParams<{ isbn: string }>();
@@ -29,7 +29,7 @@ export default function StudyCreate() {
           새로운 스터디를 만들어 함께 공부할 멤버를 모집하세요
         </p>
       </div>
-      <StudyCreateForm isbn={isbn} />
+      <StudyForm isbn={isbn} />
     </div>
   );
 }

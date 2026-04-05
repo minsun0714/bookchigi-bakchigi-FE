@@ -9,6 +9,7 @@ import {
   GlobeIcon,
   LockIcon,
   LogInIcon,
+  SettingsIcon,
   ShieldAlertIcon,
   UsersIcon,
 } from "lucide-react";
@@ -147,6 +148,16 @@ export default function StudyDetail() {
                 <h1 className="text-foreground m-0 text-xl font-bold tracking-tight">
                   {study.name}
                 </h1>
+                <div className="flex shrink-0 items-center gap-2">
+                  {study.isCurrentUserLeader && (
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => navigate(`/studies/${studyId}/edit`)}
+                    >
+                      <SettingsIcon className="size-4" />
+                    </Button>
+                  )}
                 <span
                   className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
                     study.isPublic
@@ -161,6 +172,7 @@ export default function StudyDetail() {
                   )}
                   {study.isPublic ? "공개" : "비공개"}
                 </span>
+                </div>
               </div>
 
               {/* 메타 정보 */}
