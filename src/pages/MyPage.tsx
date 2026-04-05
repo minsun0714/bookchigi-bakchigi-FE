@@ -5,6 +5,7 @@ import {
   ChevronDownIcon,
   ClockIcon,
   CrownIcon,
+  DoorOpenIcon,
   EyeIcon,
   LogOutIcon,
   MoreVerticalIcon,
@@ -134,6 +135,13 @@ function StudyCard({
               >
                 <EyeIcon className="size-4" />
                 상세보기
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-2 px-3 py-2"
+                onClick={() => navigate(`/studies/${id}/workspace`)}
+              >
+                <DoorOpenIcon className="size-4" />
+                워크스페이스
               </DropdownMenuItem>
               {role === "LEADER" && (
                 <>

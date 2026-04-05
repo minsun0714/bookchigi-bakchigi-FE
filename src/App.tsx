@@ -11,6 +11,7 @@ import StudyCreate from "@/pages/StudyCreate";
 import StudyDetail from "@/pages/StudyDetail";
 import StudyEdit from "@/pages/StudyEdit";
 import StudyMembers from "@/pages/StudyMembers";
+import Workspace from "@/pages/Workspace";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/studies/:studyId" element={<StudyDetail />} />
         <Route path="/studies/:studyId/edit" element={<StudyEdit />} />
         <Route path="/studies/:studyId/members" element={<StudyMembers />} />
+        <Route path="/studies/:studyId/workspace" element={<Workspace />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="*" element={<NotFound />} />
