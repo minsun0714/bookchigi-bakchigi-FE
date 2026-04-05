@@ -13,6 +13,7 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { fetchStudies } from "@/api/studies";
 import BookPagination from "@/components/BookPagination";
+import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -80,20 +81,23 @@ export default function StudyList({ isbn }: StudyListProps) {
               <h4 className="text-foreground text-base font-semibold">
                 {study.name}
               </h4>
-              <span
-                className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-                  study.isPublic
-                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
-                    : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
-                }`}
-              >
-                {study.isPublic ? (
-                  <GlobeIcon className="size-3" />
-                ) : (
-                  <LockIcon className="size-3" />
-                )}
-                {study.isPublic ? "공개" : "비공개"}
-              </span>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <EnrollmentStatusBadge status={study.enrollmentStatus} />
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                    study.isPublic
+                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
+                      : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                  }`}
+                >
+                  {study.isPublic ? (
+                    <GlobeIcon className="size-3" />
+                  ) : (
+                    <LockIcon className="size-3" />
+                  )}
+                  {study.isPublic ? "공개" : "비공개"}
+                </span>
+              </div>
             </div>
             {study.description && (
               <div className="text-muted-foreground prose prose-sm dark:prose-invert mt-2 line-clamp-2 max-w-none">

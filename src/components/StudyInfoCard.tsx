@@ -11,6 +11,7 @@ import Markdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 
 import type { StudyDetail } from "@/api/studies";
+import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -33,6 +34,7 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
     maxMembers,
     enrollmentStart,
     enrollmentEnd,
+    enrollmentStatus,
     description,
     createdAt,
   } = study;
@@ -71,8 +73,9 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
           </div>
         </div>
 
-        <div className="text-muted-foreground mt-4 flex flex-wrap gap-4 text-sm">
-          <span className="inline-flex items-center gap-1.5">
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+          <EnrollmentStatusBadge status={enrollmentStatus} />
+          <span className="text-muted-foreground inline-flex items-center gap-1.5">
             <UsersIcon className="size-4" />
             {members.length} / {maxMembers}명
           </span>

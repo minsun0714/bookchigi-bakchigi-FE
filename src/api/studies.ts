@@ -1,6 +1,8 @@
 import type { Book, PageResponse } from "@/api/books";
 import client from "@/api/client";
 
+export type EnrollmentStatus = "UPCOMING" | "OPEN" | "CLOSED" | "ALWAYS";
+
 export interface Study {
   id: number;
   name: string;
@@ -8,8 +10,9 @@ export interface Study {
   maxMembers: number;
   enrollmentStart: string;
   enrollmentEnd: string;
+  enrollmentStatus: EnrollmentStatus;
   isPublic: boolean;
-  creatorNickname: string;
+  leaderNickname: string;
   createdAt: string;
 }
 
@@ -27,12 +30,13 @@ export interface StudyDetail {
   maxMembers: number;
   enrollmentStart: string;
   enrollmentEnd: string;
+  enrollmentStatus: EnrollmentStatus;
   isPublic: boolean;
+  isCurrentUserLeader: boolean;
+  isCurrentUserMember: boolean;
   createdAt: string;
   book: Book;
   members: StudyMember[];
-  isCurrentUserLeader: boolean;
-  isCurrentUserMember: boolean;
 }
 
 export interface MyStudy {
@@ -42,6 +46,7 @@ export interface MyStudy {
   maxMembers: number;
   enrollmentStart: string;
   enrollmentEnd: string;
+  enrollmentStatus: EnrollmentStatus;
   isPublic: boolean;
   myRole: "LEADER" | "MEMBER";
   joinedAt: string;

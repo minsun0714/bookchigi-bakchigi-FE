@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 import type { MyStudy } from "@/api/studies";
 import { fetchMyStudies } from "@/api/studies";
+import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import {
   Accordion,
   AccordionContent,
@@ -30,11 +31,6 @@ function formatDate(iso: string) {
   return isNaN(d.getTime())
     ? ""
     : format(d, "yyyy.MM.dd HH:mm", { locale: ko });
-}
-
-function isEnded(enrollmentEnd: string | null) {
-  if (!enrollmentEnd) return false;
-  return new Date(enrollmentEnd) < new Date();
 }
 
 function StudyAccordion({
@@ -58,8 +54,8 @@ function StudyAccordion({
           description,
           enrollmentStart,
           enrollmentEnd,
+          enrollmentStatus,
         } = study;
-        const ended = isEnded(enrollmentEnd);
 
         return (
           <AccordionItem
@@ -83,11 +79,7 @@ function StudyAccordion({
                     <span className="text-foreground min-w-0 truncate text-sm font-medium">
                       {name}
                     </span>
-                    {ended && (
-                      <Badge variant="secondary" className="text-[10px]">
-                        종료
-                      </Badge>
-                    )}
+                    <EnrollmentStatusBadge status={enrollmentStatus} />
                   </div>
                   <span className="text-muted-foreground w-full min-w-0 truncate text-xs">
                     {book.title}
