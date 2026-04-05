@@ -54,7 +54,7 @@ export default function BookDetail() {
         돌아가기
       </Button>
 
-      <Card className="overflow-hidden">
+      <Card className="max-w-full overflow-hidden">
         {isLoading ? (
           <div className="flex flex-col gap-6 p-6 sm:flex-row">
             <Skeleton className="mx-auto h-64 w-44 shrink-0 rounded-lg sm:mx-0" />
@@ -68,16 +68,16 @@ export default function BookDetail() {
             </div>
           </div>
         ) : book ? (
-          <div className="flex flex-col sm:flex-row">
-            <div className="bg-muted/50 flex shrink-0 items-center justify-center p-8">
+          <div className="flex flex-col overflow-hidden sm:flex-row">
+            <div className="bg-muted/50 flex items-center justify-center p-6 sm:w-48 sm:shrink-0 sm:p-8">
               <img
                 src={book.image}
                 alt={book.title}
-                className="h-64 w-auto rounded-lg object-contain drop-shadow-md"
+                className="h-48 max-w-full rounded-lg object-contain drop-shadow-md sm:h-64"
               />
             </div>
-            <div className="flex flex-col justify-center gap-3 p-6">
-              <h1 className="text-foreground m-0 text-xl font-bold leading-tight tracking-tight">
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-3 p-5 sm:p-6">
+              <h1 className="text-foreground m-0 break-words text-xl font-bold leading-tight tracking-tight">
                 {book.title}
               </h1>
               <div className="flex flex-wrap items-center gap-2">
@@ -91,7 +91,7 @@ export default function BookDetail() {
                   {book.pubDate}
                 </span>
               </div>
-              <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+              <p className="text-muted-foreground mt-1 break-words text-sm leading-relaxed">
                 {book.description}
               </p>
             </div>

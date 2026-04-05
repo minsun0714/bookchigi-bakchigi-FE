@@ -35,6 +35,30 @@ export interface StudyDetail {
   isCurrentUserMember: boolean;
 }
 
+export interface MyStudy {
+  id: number;
+  name: string;
+  description: string;
+  maxMembers: number;
+  enrollmentStart: string;
+  enrollmentEnd: string;
+  isPublic: boolean;
+  myRole: "LEADER" | "MEMBER";
+  joinedAt: string;
+  book: Book;
+}
+
+export async function fetchMyStudies(
+  role: "LEADER" | "MEMBER",
+  page: number,
+  size: number = 10,
+): Promise<PageResponse<MyStudy>> {
+  const res = await client.get<PageResponse<MyStudy>>("/users/me/studies", {
+    params: { role, page: page || 0, size },
+  });
+  return res.data;
+}
+
 export interface StudyCreateRequest {
   name: string;
   description: string;
