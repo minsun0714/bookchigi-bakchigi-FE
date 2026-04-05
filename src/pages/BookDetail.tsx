@@ -1,24 +1,16 @@
 import { useState } from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon, LockIcon, LogInIcon, PlusIcon } from "lucide-react";
+import { ArrowLeftIcon, LockIcon, PlusIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { fetchBook } from "@/api/books";
+import LoginModal from "@/components/LoginModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import StudyList from "@/components/StudyList";
 import { useAuth } from "@/hooks/useAuth";
-
-const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`;
 
 export default function BookDetail() {
   const { isbn } = useParams<{ isbn: string }>();
@@ -42,41 +34,16 @@ export default function BookDetail() {
     }
   };
 
-  const handleLogin = () => {
-    sessionStorage.setItem("redirect_after_login", `/books/${isbn}/studies/new`);
-    window.location.href = GOOGLE_LOGIN_URL;
-  };
-
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-8">
-      {/* 로그인 모달 */}
-      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
-        <DialogContent>
-          <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
-            <DialogTitle className="flex items-center gap-2">
-              <LogInIcon className="size-5" />
-              로그인 필요
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-3 py-4 text-center">
-            <LockIcon className="text-muted-foreground size-12 opacity-40" />
-            <p className="text-foreground text-sm font-medium">
-              스터디를 등록하려면 로그인이 필요합니다
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowLoginModal(false)}>
-              취소
-            </Button>
-            <Button onClick={handleLogin}>
-              <LogInIcon className="size-4" />
-              로그인하기
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <LoginModal
+        open={showLoginModal}
+        onOpenChange={setShowLoginModal}
+        icon={<LockIcon className="text-muted-foreground size-12 opacity-40" />}
+        message="스터디를 등록하려면 로그인이 필요합니다"
+        redirectPath={`/books/${isbn}/studies/new`}
+      />
 
-      {/* 뒤로가기 */}
       <Button
         variant="ghost"
         size="sm"
@@ -87,7 +54,6 @@ export default function BookDetail() {
         돌아가기
       </Button>
 
-      {/* 책 상세 정보 */}
       <Card className="overflow-hidden">
         {isLoading ? (
           <div className="flex flex-col gap-6 p-6 sm:flex-row">
@@ -133,7 +99,6 @@ export default function BookDetail() {
         ) : null}
       </Card>
 
-      {/* 스터디 목록 */}
       <section>
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-foreground m-0 text-lg font-bold">스터디</h2>

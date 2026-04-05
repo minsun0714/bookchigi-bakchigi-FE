@@ -32,6 +32,7 @@ export interface StudyDetail {
   book: Book;
   members: StudyMember[];
   isCurrentUserLeader: boolean;
+  isCurrentUserMember: boolean;
 }
 
 export interface StudyCreateRequest {
@@ -66,6 +67,10 @@ export async function updateStudy(
 ): Promise<StudyDetail> {
   const res = await client.put<StudyDetail>(`/studies/${studyId}`, body);
   return res.data;
+}
+
+export async function joinStudy(studyId: number): Promise<void> {
+  await client.post(`/studies/${studyId}/join`);
 }
 
 export async function createStudy(
