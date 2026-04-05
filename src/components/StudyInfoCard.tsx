@@ -114,13 +114,15 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
 
       {/* 설명 */}
       {description && (
-        <div className="prose prose-sm dark:prose-invert max-w-none border-t px-6 py-5">
-          <Markdown>{description}</Markdown>
+        <div className="px-6 py-5">
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+            <Markdown>{description}</Markdown>
+          </div>
         </div>
       )}
 
       {/* 푸터 */}
-      <div className="text-muted-foreground border-t px-6 py-3 text-xs">
+      <div className="text-muted-foreground px-6 pb-5 text-xs">
         생성일: {formatDateTime(createdAt)}
       </div>
     </Card>
