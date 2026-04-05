@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { type StudyDetail, updateStudy } from "@/api/studies";
 import StudyFormFields from "@/components/StudyFormFields";
@@ -24,8 +25,10 @@ export default function StudyEditForm({
     mutationFn: () => updateStudy(studyId, buildRequest()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["study", String(studyId)] });
+      toast.success("스터디가 수정되었습니다");
       navigate(`/studies/${studyId}`);
     },
+    onError: () => toast.error("스터디 수정에 실패했습니다"),
   });
 
   const handleSubmit = () => {

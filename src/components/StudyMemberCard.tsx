@@ -17,7 +17,7 @@ export default function StudyMemberCard({
   joinMutation,
 }: StudyMemberCardProps) {
   const { members, maxMembers, isCurrentUserMember } = study;
-  const { isPending, isSuccess, isError } = joinMutation;
+  const { isPending } = joinMutation;
 
   return (
     <Card>
@@ -79,16 +79,6 @@ export default function StudyMemberCard({
             <UserPlusIcon className="size-4" />
             {isPending ? "신청 중..." : "스터디 합류 신청"}
           </Button>
-        )}
-        {isSuccess && (
-          <p className="mt-3 text-center text-sm text-emerald-600">
-            합류 신청이 완료되었습니다
-          </p>
-        )}
-        {isError && (
-          <p className="text-destructive mt-3 text-center text-sm">
-            합류 신청에 실패했습니다
-          </p>
         )}
       </CardContent>
     </Card>

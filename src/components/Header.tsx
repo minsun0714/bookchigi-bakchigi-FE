@@ -1,6 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpenIcon, LogOutIcon, UserCircleIcon, UserIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+
+import { toast } from "sonner";
 
 import client from "@/api/client";
 import { fetchMe } from "@/api/user";
@@ -19,6 +21,7 @@ const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorizat
 export default function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: ["me"],
@@ -38,6 +41,8 @@ export default function Header() {
       // 로그아웃 요청 실패해도 로컬 토큰은 삭제
     }
     logout();
+    queryClient.clear();
+    toast.success("로그아웃되었습니다");
     navigate("/");
   };
 

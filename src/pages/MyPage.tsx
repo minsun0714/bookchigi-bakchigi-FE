@@ -15,6 +15,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import type { MyStudy } from "@/api/studies";
+import { toast } from "sonner";
+
 import { deleteStudy, fetchMyStudies } from "@/api/studies";
 import { fetchMe } from "@/api/user";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
@@ -54,7 +56,9 @@ function StudyCard({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["myStudies"] });
       setShowDeleteDialog(false);
+      toast.success("스터디가 삭제되었습니다");
     },
+    onError: () => toast.error("스터디 삭제에 실패했습니다"),
   });
 
   return (

@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { toast } from "sonner";
+
 import { fetchStudy, joinStudy } from "@/api/studies";
 import LoginModal from "@/components/LoginModal";
 import StudyInfoCard from "@/components/StudyInfoCard";
@@ -43,7 +45,9 @@ export default function StudyDetail() {
     mutationFn: () => joinStudy(Number(studyId)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["study", studyId] });
+      toast.success("합류 신청이 완료되었습니다");
     },
+    onError: () => toast.error("합류 신청에 실패했습니다"),
   });
 
   const status = error instanceof AxiosError ? error.response?.status : null;

@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, XIcon } from "lucide-react";
 
+import { toast } from "sonner";
+
 import {
   approveMember,
   fetchPendingMembers,
@@ -25,14 +27,18 @@ export default function PendingMembers({ studyId }: PendingMembersProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingMembers", studyId] });
       queryClient.invalidateQueries({ queryKey: ["study", String(studyId)] });
+      toast.success("멤버를 승인했습니다");
     },
+    onError: () => toast.error("멤버 승인에 실패했습니다"),
   });
 
   const reject = useMutation({
     mutationFn: (userId: number) => rejectMember(studyId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingMembers", studyId] });
+      toast.success("가입 신청을 거절했습니다");
     },
+    onError: () => toast.error("거절에 실패했습니다"),
   });
 
   if (!pending || pending.length === 0) return null;

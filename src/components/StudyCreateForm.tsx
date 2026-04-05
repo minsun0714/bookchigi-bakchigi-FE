@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { createStudy } from "@/api/studies";
 import StudyFormFields from "@/components/StudyFormFields";
@@ -18,8 +19,10 @@ export default function StudyCreateForm({ isbn }: StudyCreateFormProps) {
     mutationFn: () => createStudy(isbn, buildRequest()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["studies", isbn] });
+      toast.success("스터디가 생성되었습니다");
       navigate(`/books/${isbn}`);
     },
+    onError: () => toast.error("스터디 생성에 실패했습니다"),
   });
 
   const handleSubmit = () => {

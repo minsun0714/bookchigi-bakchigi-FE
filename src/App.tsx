@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import Header from "@/components/Header";
 import BookDetail from "@/pages/BookDetail";
@@ -14,6 +15,7 @@ import StudyMembers from "@/pages/StudyMembers";
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-center" richColors />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
