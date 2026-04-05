@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import {
   ArrowLeftIcon,
-  DoorOpenIcon,
   LockIcon,
   ShieldAlertIcon,
   UserPlusIcon,
@@ -138,16 +137,6 @@ export default function StudyDetail() {
         </Card>
       ) : study ? (
         <>
-          {study.isCurrentUserMember && (
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={() => navigate(`/studies/${studyId}/workspace`)}
-            >
-              <DoorOpenIcon className="size-5" />
-              워크스페이스 입장
-            </Button>
-          )}
           <StudyInfoCard study={study} />
           <StudyMemberCard
             study={study}

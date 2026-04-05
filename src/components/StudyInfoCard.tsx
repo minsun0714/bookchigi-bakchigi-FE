@@ -3,6 +3,7 @@ import { ko } from "date-fns/locale";
 import {
   BookOpenIcon,
   CalendarIcon,
+  DoorOpenIcon,
   GlobeIcon,
   LockIcon,
   SettingsIcon,
@@ -122,8 +123,18 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
       )}
 
       {/* 푸터 */}
-      <div className="text-muted-foreground px-6 pb-5 text-xs">
-        생성일: {formatDateTime(createdAt)}
+      <div className="flex items-center justify-between px-6 pb-5">
+        <span className="text-muted-foreground text-xs">
+          생성일: {formatDateTime(createdAt)}
+        </span>
+        {study.isCurrentUserMember && (
+          <Button
+            onClick={() => navigate(`/studies/${id}/workspace`)}
+          >
+            <DoorOpenIcon className="size-5" />
+            워크스페이스 입장
+          </Button>
+        )}
       </div>
     </Card>
   );
