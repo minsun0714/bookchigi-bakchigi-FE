@@ -50,7 +50,6 @@ function StudyAccordion({
           isPublic,
           maxMembers,
           book,
-          description,
           enrollmentStart,
           enrollmentEnd,
           enrollmentStatus,
@@ -88,11 +87,6 @@ function StudyAccordion({
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex flex-col gap-3 pb-2 pt-1">
-                {description && (
-                  <p className="text-muted-foreground text-sm">
-                    {description}
-                  </p>
-                )}
 
                 <div className="text-muted-foreground flex flex-wrap gap-x-5 gap-y-2 text-xs">
                   <span className="inline-flex items-center gap-1.5">
