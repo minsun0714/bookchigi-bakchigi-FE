@@ -13,8 +13,24 @@ export interface Study {
   createdAt: string;
 }
 
-export interface StudyDetail extends Study {
+export interface StudyMember {
+  userId: number;
+  nickname: string;
+  isLeader: boolean;
+  joinedAt: string;
+}
+
+export interface StudyDetail {
+  id: number;
+  name: string;
+  description: string;
+  maxMembers: number;
+  enrollmentStart: string;
+  enrollmentEnd: string;
+  isPublic: boolean;
+  createdAt: string;
   book: Book;
+  members: StudyMember[];
 }
 
 export interface StudyCreateRequest {
