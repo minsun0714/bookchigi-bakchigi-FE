@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "@/components/Header";
 import BookDetail from "@/pages/BookDetail";
 import Home from "@/pages/Home";
+import NotFound from "@/pages/NotFound";
 import MyPage from "@/pages/MyPage";
 import OAuthCallback from "@/pages/OAuthCallback";
 import StudyCreate from "@/pages/StudyCreate";
@@ -23,6 +24,7 @@ function App() {
         <Route path="/studies/:studyId/members" element={<StudyMembers />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
