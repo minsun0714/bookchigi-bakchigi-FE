@@ -289,7 +289,10 @@ export default function MyPage() {
       setIsEditingNickname(false);
       toast.success("닉네임이 변경되었습니다");
     },
-    onError: () => toast.error("닉네임 변경에 실패했습니다"),
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      toast.error(axiosError.response?.data?.message ?? "닉네임 변경에 실패했습니다");
+    },
   });
 
   const startEditNickname = () => {

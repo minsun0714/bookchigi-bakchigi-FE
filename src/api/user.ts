@@ -15,6 +15,6 @@ export async function fetchMe(): Promise<User> {
 }
 
 export async function updateNickname(nickname: string): Promise<User> {
-  const res = await client.patch<User>("/me/nickname", { nickname });
+  const res = await client.patch<User>("/users/me/nickname", { nickname });
   return res.data;
 }
