@@ -109,11 +109,13 @@ export default function StudyList({ isbn }: StudyListProps) {
                 <UsersIcon className="size-3.5" />
                 최대 {study.maxMembers}명
               </span>
-              <span className="inline-flex items-center gap-1">
-                <CalendarIcon className="size-3.5" />
-                {formatDateTime(study.enrollmentStart)} ~{" "}
-                {formatDateTime(study.enrollmentEnd)}
-              </span>
+              {study.enrollmentStart && study.enrollmentEnd && (
+                <span className="inline-flex items-center gap-1">
+                  <CalendarIcon className="size-3.5" />
+                  {formatDateTime(study.enrollmentStart)} ~{" "}
+                  {formatDateTime(study.enrollmentEnd)}
+                </span>
+              )}
             </div>
           </CardContent>
           </Card>
