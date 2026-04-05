@@ -1,17 +1,9 @@
-import { EyeIcon } from "lucide-react";
 import Markdown from "react-markdown";
 
 import type { StudyCreateRequest } from "@/api/studies";
 import DatePicker from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 
@@ -83,36 +75,22 @@ export default function StudyFormFields({
                   (Markdown 지원)
                 </span>
               </label>
-              <Dialog>
-                <DialogTrigger>
-                  <Button type="button" variant="ghost" size="xs">
-                    <EyeIcon className="size-3.5" />
-                    미리보기
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-h-[80vh] min-h-0 overflow-y-auto sm:max-w-2xl">
-                  <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
-                    <DialogTitle>미리보기</DialogTitle>
-                  </DialogHeader>
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    {description ? (
-                      <Markdown>{description}</Markdown>
-                    ) : (
-                      <p className="text-muted-foreground italic">
-                        미리볼 내용이 없습니다
-                      </p>
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
-            <textarea
-              value={description}
-              onChange={(e) => onChange({ description: e.target.value })}
-              placeholder="스터디 목표, 진행 방식 등을 적어주세요. Markdown을 지원합니다."
-              rows={15}
-              className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 min-h-72 rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2"
-            />
+            <div className="grid min-h-72 grid-cols-1 gap-3 sm:grid-cols-2">
+              <textarea
+                value={description}
+                onChange={(e) => onChange({ description: e.target.value })}
+                placeholder="스터디 목표, 진행 방식 등을 적어주세요. Markdown을 지원합니다."
+                className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 min-h-72 resize-none rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2"
+              />
+              <div className="border-input bg-muted/30 prose prose-sm dark:prose-invert min-h-72 overflow-y-auto rounded-lg border px-3 py-2.5">
+                {description ? (
+                  <Markdown>{description}</Markdown>
+                ) : (
+                  <p className="text-muted-foreground italic">미리보기</p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* 최대 인원 */}
