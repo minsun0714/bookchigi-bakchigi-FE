@@ -205,17 +205,17 @@ export default function MyPage() {
       />
 
       <MyStudySection
-        role="PENDING"
-        title="승인 대기 중"
-        icon={<ClockIcon className="size-5" />}
-        emptyMessage="승인 대기 중인 스터디가 없습니다"
-      />
-
-      <MyStudySection
         role="MEMBER"
         title="참여 중인 스터디"
         icon={<UsersIcon className="size-5" />}
         emptyMessage="아직 참여 중인 스터디가 없습니다"
+      />
+
+      <MyStudySection
+        role="PENDING"
+        title="승인 대기 중"
+        icon={<ClockIcon className="size-5" />}
+        emptyMessage="승인 대기 중인 스터디가 없습니다"
       />
     </div>
   );
