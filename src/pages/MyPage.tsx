@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BookOpenIcon,
   ChevronDownIcon,
@@ -8,6 +8,7 @@ import {
   MoreVerticalIcon,
   SettingsIcon,
   Trash2Icon,
+  UserIcon,
   UsersIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -15,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import type { MyStudy } from "@/api/studies";
 import { deleteStudy, fetchMyStudies } from "@/api/studies";
+import { fetchMe } from "@/api/user";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -264,11 +266,35 @@ function MyStudySection({
 }
 
 export default function MyPage() {
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: fetchMe,
+  });
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-8">
-      <h1 className="text-foreground m-0 text-2xl font-bold tracking-tight">
-        마이페이지
-      </h1>
+      {/* 프로필 */}
+      <div className="flex items-center gap-4">
+        {user?.profileImage ? (
+          <img
+            src={user.profileImage}
+            alt={user.nickname}
+            className="size-16 rounded-full object-cover"
+          />
+        ) : (
+          <div className="bg-muted text-muted-foreground flex size-16 items-center justify-center rounded-full">
+            <UserIcon className="size-8" />
+          </div>
+        )}
+        <div>
+          <h1 className="text-foreground m-0 text-2xl font-bold tracking-tight">
+            {user?.nickname ?? "마이페이지"}
+          </h1>
+          {user?.email && (
+            <p className="text-muted-foreground mt-0.5 text-sm">{user.email}</p>
+          )}
+        </div>
+      </div>
 
       <MyStudySection
         role="LEADER"

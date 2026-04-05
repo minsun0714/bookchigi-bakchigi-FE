@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { BookOpenIcon, LogOutIcon, UserCircleIcon, UserIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import client from "@/api/client";
+import { fetchMe } from "@/api/user";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +19,12 @@ const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorizat
 export default function Header() {
   const navigate = useNavigate();
   const { isLoggedIn, logout } = useAuth();
+
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: fetchMe,
+    enabled: isLoggedIn,
+  });
 
   const handleLogin = () => {
     sessionStorage.setItem("redirect_after_login", window.location.pathname);
@@ -46,11 +54,32 @@ export default function Header() {
         {isLoggedIn ? (
           <DropdownMenu>
             <DropdownMenuTrigger className="focus:outline-none">
-              <div className="bg-muted text-foreground flex size-9 items-center justify-center rounded-full transition-colors hover:bg-muted/70">
-                <UserIcon className="size-5" />
-              </div>
+              {user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt={user.nickname}
+                  className="size-9 rounded-full object-cover transition-opacity hover:opacity-80"
+                />
+              ) : (
+                <div className="bg-muted text-foreground flex size-9 items-center justify-center rounded-full transition-colors hover:bg-muted/70">
+                  <UserIcon className="size-5" />
+                </div>
+              )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="!w-48">
+              {user && (
+                <>
+                  <div className="px-3 py-2">
+                    <p className="text-foreground text-sm font-medium">
+                      {user.nickname}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {user.email}
+                    </p>
+                  </div>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem
                 className="gap-2 px-3 py-2.5"
                 onClick={() => navigate("/mypage")}
