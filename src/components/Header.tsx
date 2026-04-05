@@ -1,13 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { BookOpenIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
+import client from "@/api/client";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const GOOGLE_LOGIN_URL = `${API_BASE_URL}/oauth2/authorization/google`;
+const GOOGLE_LOGIN_URL = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/google`;
 
 export default function Header() {
   const navigate = useNavigate();
-  const { isLoggedIn, token, logout } = useAuth();
+  const { isLoggedIn, logout } = useAuth();
 
   const handleLogin = () => {
     sessionStorage.setItem("redirect_after_login", window.location.pathname);
@@ -16,10 +18,7 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await client.post("/auth/logout");
     } catch {
       // 로그아웃 요청 실패해도 로컬 토큰은 삭제
     }
@@ -28,37 +27,33 @@ export default function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-[var(--border)] px-6 py-3">
-      <a href="/" className="group flex items-center gap-2 no-underline">
-        <span className="text-2xl">📚</span>
-        <span className="bg-gradient-to-r from-[var(--accent)] to-purple-400 bg-clip-text text-lg font-bold tracking-tight text-transparent transition-opacity group-hover:opacity-80">
-          북치기 박치기
-        </span>
-      </a>
+    <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-2 no-underline">
+          <BookOpenIcon className="text-primary size-6" />
+          <span className="text-foreground text-lg font-bold tracking-tight">
+            북치기 박치기
+          </span>
+        </Link>
 
-      {isLoggedIn ? (
-        <button
-          onClick={handleLogout}
-          className="cursor-pointer rounded-lg border border-[var(--border)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--text-h)] transition-colors hover:bg-[var(--accent-bg)]"
-        >
-          로그아웃
-        </button>
-      ) : (
-        <button
-          onClick={handleLogin}
-          className="flex cursor-pointer items-center gap-2 rounded-lg border-none bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90"
-        >
-          <GoogleIcon />
-          로그인하기
-        </button>
-      )}
+        {isLoggedIn ? (
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            로그아웃
+          </Button>
+        ) : (
+          <Button size="sm" onClick={handleLogin}>
+            <GoogleIcon />
+            로그인
+          </Button>
+        )}
+      </div>
     </header>
   );
 }
 
 function GoogleIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 48 48">
+    <svg width="16" height="16" viewBox="0 0 48 48">
       <path
         fill="#FFC107"
         d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"

@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import client from "@/api/client";
 
 export interface Book {
   isbn: string;
@@ -23,13 +23,17 @@ export async function fetchBooks(
   page: number,
   size: number = 12,
 ): Promise<PageResponse<Book>> {
-  const params = new URLSearchParams({
+  const params: Record<string, string> = {
     page: String(page || 0),
     size: String(size),
-  });
-  if (query) params.set("query", query);
+  };
+  if (query) params.query = query;
 
-  const res = await fetch(`${API_BASE_URL}/books?${params}`);
-  if (!res.ok) throw new Error("책 목록을 불러오는데 실패했습니다");
-  return res.json();
+  const res = await client.get<PageResponse<Book>>("/books", { params });
+  return res.data;
+}
+
+export async function fetchBook(isbn: string): Promise<Book> {
+  const res = await client.get<Book>(`/books/${isbn}`);
+  return res.data;
 }

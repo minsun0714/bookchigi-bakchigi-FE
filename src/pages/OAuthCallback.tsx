@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import client from "@/api/client";
 import { useAuth } from "@/hooks/useAuth";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function OAuthCallback() {
   const [searchParams] = useSearchParams();
@@ -23,15 +22,10 @@ export default function OAuthCallback() {
 
     const exchangeCode = async () => {
       try {
-        const res = await fetch(
-          `${API_BASE_URL}/auth/exchange?code=${encodeURIComponent(code)}`,
-        );
-
-        if (res.ok) {
-          const token = res.headers.get("Authorization")?.replace("Bearer ", "");
-          if (token) {
-            login(token);
-          }
+        const res = await client.get("/auth/exchange", { params: { code } });
+        const token = res.headers["authorization"]?.replace("Bearer ", "");
+        if (token) {
+          login(token);
         }
       } catch {
         // 토큰 교환 실패
