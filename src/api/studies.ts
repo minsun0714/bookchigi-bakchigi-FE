@@ -121,6 +121,10 @@ export async function rejectMember(
   await client.post(`/studies/${studyId}/members/${userId}/reject`);
 }
 
+export async function deleteStudy(studyId: number): Promise<void> {
+  await client.delete(`/studies/${studyId}`);
+}
+
 export async function joinStudy(studyId: number): Promise<void> {
   await client.post(`/studies/${studyId}/join`);
 }

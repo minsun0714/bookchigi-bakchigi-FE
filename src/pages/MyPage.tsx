@@ -1,21 +1,30 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { ChevronDownIcon } from "lucide-react";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   BookOpenIcon,
+  ChevronDownIcon,
   ClockIcon,
   CrownIcon,
   EyeIcon,
   MoreVerticalIcon,
   SettingsIcon,
+  Trash2Icon,
   UsersIcon,
 } from "lucide-react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import type { MyStudy } from "@/api/studies";
-import { fetchMyStudies } from "@/api/studies";
+import { deleteStudy, fetchMyStudies } from "@/api/studies";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +42,18 @@ function StudyCard({
   showManage: boolean;
 }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
   const { id, name, book, enrollmentStatus } = study;
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteStudy(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myStudies"] });
+      setShowDeleteDialog(false);
+    },
+  });
 
   return (
     <div className="relative">
@@ -60,7 +80,6 @@ function StudyCard({
                 {book.title}
               </span>
             </div>
-            {/* 드롭다운 자리 확보 */}
             {showManage && <div className="w-8 shrink-0" />}
           </CardContent>
         </Card>
@@ -95,10 +114,64 @@ function StudyCard({
                 <UsersIcon className="size-4" />
                 멤버 관리
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="gap-2 px-3 py-2"
+                variant="destructive"
+                onClick={() => setShowDeleteDialog(true)}
+              >
+                <Trash2Icon className="size-4" />
+                삭제
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       )}
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader className="-mx-4 -mt-4 rounded-t-xl border-b bg-muted/60 px-5 py-4">
+            <DialogTitle className="flex items-center gap-2">
+              <Trash2Icon className="size-5" />
+              스터디 삭제
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-2">
+            <p className="text-muted-foreground text-sm">
+              스터디에 포함된 모든 자료와 데이터가 영구적으로 삭제됩니다.
+              삭제하려면 아래에 스터디 이름을 정확히 입력해주세요.
+            </p>
+            <div className="flex flex-col gap-1.5">
+              <p className="text-foreground text-sm font-medium">{name}</p>
+              <input
+                type="text"
+                value={deleteConfirm}
+                onChange={(e) => setDeleteConfirm(e.target.value)}
+                placeholder="스터디 이름을 입력하세요"
+                className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setDeleteConfirm("");
+              }}
+            >
+              취소
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteConfirm !== name || deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "삭제 중..." : "삭제"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
