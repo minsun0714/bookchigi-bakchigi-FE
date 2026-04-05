@@ -10,6 +10,8 @@ import {
 import Markdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 
+import { BookOpenIcon } from "lucide-react";
+
 import type { StudyDetail } from "@/api/studies";
 import EnrollmentStatusBadge from "@/components/EnrollmentStatusBadge";
 import { Button } from "@/components/ui/button";
@@ -37,10 +39,34 @@ export default function StudyInfoCard({ study }: StudyInfoCardProps) {
     enrollmentStatus,
     description,
     createdAt,
+    book,
   } = study;
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
+      {/* 책 정보 */}
+      <div className="flex items-center gap-4 border-b p-5">
+        <div className="bg-muted/50 flex shrink-0 items-center justify-center rounded-lg p-3">
+          {book.image ? (
+            <img
+              src={book.image}
+              alt={book.title}
+              className="h-16 w-auto rounded object-contain"
+            />
+          ) : (
+            <BookOpenIcon className="text-muted-foreground size-10" />
+          )}
+        </div>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <p className="text-foreground truncate text-sm font-semibold">
+            {book.title}
+          </p>
+          <p className="text-muted-foreground truncate text-xs">
+            {book.author} · {book.publisher}
+          </p>
+        </div>
+      </div>
+
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-3">
           <h1 className="text-foreground m-0 text-xl font-bold tracking-tight">

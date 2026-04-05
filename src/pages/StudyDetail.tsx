@@ -12,7 +12,6 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { fetchStudy, joinStudy } from "@/api/studies";
 import LoginModal from "@/components/LoginModal";
-import StudyBookCard from "@/components/StudyBookCard";
 import StudyInfoCard from "@/components/StudyInfoCard";
 import StudyMemberCard from "@/components/StudyMemberCard";
 import { Button } from "@/components/ui/button";
@@ -133,7 +132,6 @@ export default function StudyDetail() {
       ) : study ? (
         <>
           <StudyInfoCard study={study} />
-          <StudyBookCard book={study.book} />
           <StudyMemberCard
             study={study}
             onJoin={handleJoin}
