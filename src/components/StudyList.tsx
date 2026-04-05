@@ -83,7 +83,7 @@ export default function StudyList({ isbn }: StudyListProps) {
               <div className="flex shrink-0 items-center gap-1.5">
                 <EnrollmentStatusBadge status={study.enrollmentStatus} />
                 <span
-                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${
                     study.isPublic
                       ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
                       : "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400"

@@ -35,7 +35,7 @@ export default function EnrollmentStatusBadge({
   const { label, className } = config[status] ?? { label: status, className: "" };
 
   return (
-    <Badge variant="secondary" className={`text-[10px] ${className}`}>
+    <Badge variant="secondary" className={`px-2.5 py-0.5 text-xs ${className}`}>
       {label}
     </Badge>
   );
