@@ -6,7 +6,7 @@ import { fetchStudy } from "@/api/studies";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import StudyForm from "@/components/StudyForm";
+import StudyEditForm from "@/components/StudyEditForm";
 
 export default function StudyEdit() {
   const { studyId } = useParams<{ studyId: string }>();
@@ -48,8 +48,7 @@ export default function StudyEdit() {
           </CardContent>
         </Card>
       ) : study ? (
-        <StudyForm
-          isbn={study.book.isbn}
+        <StudyEditForm
           studyId={Number(studyId)}
           initialData={study}
         />

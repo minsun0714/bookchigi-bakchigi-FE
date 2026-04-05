@@ -1,18 +1,7 @@
-import { type FormEvent, useState } from "react";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { EyeIcon } from "lucide-react";
 import Markdown from "react-markdown";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 
-import {
-  createStudy,
-  type StudyCreateRequest,
-  type StudyDetail,
-  updateStudy,
-} from "@/api/studies";
+import type { StudyCreateRequest } from "@/api/studies";
 import DatePicker from "@/components/DatePicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,122 +15,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 
-const schema = z
-  .object({
-    name: z.string().min(1, "스터디 이름을 입력해주세요"),
-    maxMembers: z.number().min(2, "최소 2명 이상이어야 합니다"),
-    enrollmentStart: z.date().optional(),
-    enrollmentEnd: z.date().optional(),
-  })
-  .refine(
-    (d) => {
-      if (d.enrollmentStart && d.enrollmentEnd)
-        return d.enrollmentEnd >= d.enrollmentStart;
-      return true;
-    },
-    {
-      message: "마감일은 시작일 이후여야 합니다",
-      path: ["enrollmentEnd"],
-    },
-  );
-
-type FieldErrors = Partial<Record<string, string>>;
-
-function getErrors(data: {
+export interface StudyFormState {
   name: string;
+  description: string;
   maxMembers: number;
   enrollmentStart?: Date;
   enrollmentEnd?: Date;
-}): FieldErrors {
-  const result = schema.safeParse(data);
-  if (result.success) return {};
-  const errors: FieldErrors = {};
-  for (const issue of result.error.issues) {
-    const key = issue.path[0]?.toString();
-    if (key && !errors[key]) errors[key] = issue.message;
-  }
-  return errors;
+  isPublic: boolean;
 }
 
-function parseDate(value: string | undefined | null): Date | undefined {
-  if (!value) return undefined;
-  const d = new Date(value);
-  return isNaN(d.getTime()) ? undefined : d;
+type FieldErrors = Partial<Record<string, string>>;
+
+interface StudyFormFieldsProps {
+  state: StudyFormState;
+  errors: FieldErrors;
+  isPending: boolean;
+  submitLabel: string;
+  pendingLabel: string;
+  onChange: (patch: Partial<StudyFormState>) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
 }
 
-interface StudyFormProps {
-  isbn: string;
-  studyId?: number;
-  initialData?: StudyDetail;
-}
+export default function StudyFormFields({
+  state,
+  errors,
+  isPending,
+  submitLabel,
+  pendingLabel,
+  onChange,
+  onSubmit,
+  onCancel,
+}: StudyFormFieldsProps) {
+  const { name, description, maxMembers, enrollmentStart, enrollmentEnd, isPublic } = state;
 
-export default function StudyForm({
-  isbn,
-  studyId,
-  initialData,
-}: StudyFormProps) {
-  const isEdit = !!studyId;
-  const [name, setName] = useState(initialData?.name ?? "");
-  const [description, setDescription] = useState(
-    initialData?.description ?? "",
-  );
-  const [maxMembers, setMaxMembers] = useState(initialData?.maxMembers ?? 4);
-  const [enrollmentStart, setEnrollmentStart] = useState<Date | undefined>(
-    parseDate(initialData?.enrollmentStart),
-  );
-  const [enrollmentEnd, setEnrollmentEnd] = useState<Date | undefined>(
-    parseDate(initialData?.enrollmentEnd),
-  );
-  const [isPublic, setIsPublic] = useState(initialData?.isPublic ?? true);
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [touched, setTouched] = useState(false);
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-
-  const formData = { name, maxMembers, enrollmentStart, enrollmentEnd };
-
-  const revalidate = (overrides?: Partial<typeof formData>) => {
-    if (!touched) return;
-    const data = { ...formData, ...overrides };
-    setErrors(getErrors(data));
-  };
-
-  const buildRequest = (): StudyCreateRequest => ({
-    name,
-    description,
-    maxMembers,
-    enrollmentStart: enrollmentStart
-      ? format(enrollmentStart, "yyyy-MM-dd'T'HH:mm:ss")
-      : "",
-    enrollmentEnd: enrollmentEnd
-      ? format(enrollmentEnd, "yyyy-MM-dd'T'HH:mm:ss")
-      : "",
-    isPublic,
-  });
-
-  const mutation = useMutation({
-    mutationFn: () =>
-      isEdit
-        ? updateStudy(studyId!, buildRequest())
-        : createStudy(isbn, buildRequest()),
-    onSuccess: () => {
-      if (isEdit) {
-        queryClient.invalidateQueries({ queryKey: ["study", String(studyId)] });
-        navigate(`/studies/${studyId}`);
-      } else {
-        queryClient.invalidateQueries({ queryKey: ["studies", isbn] });
-        navigate(`/books/${isbn}`);
-      }
-    },
-  });
-
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched(true);
-    const fieldErrors = getErrors(formData);
-    setErrors(fieldErrors);
-    if (Object.keys(fieldErrors).length > 0) return;
-    mutation.mutate();
+    onSubmit();
   };
 
   return (
@@ -155,10 +65,7 @@ export default function StudyForm({
             </label>
             <Input
               value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                revalidate({ name: e.target.value });
-              }}
+              onChange={(e) => onChange({ name: e.target.value })}
               placeholder="예: 매주 토요일 함께 읽는 독서 모임"
               className={`h-11 ${errors.name ? "border-destructive" : ""}`}
             />
@@ -201,7 +108,7 @@ export default function StudyForm({
             </div>
             <textarea
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => onChange({ description: e.target.value })}
               placeholder="스터디 목표, 진행 방식 등을 적어주세요. Markdown을 지원합니다."
               rows={6}
               className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring/50 rounded-lg border px-3 py-2.5 text-sm leading-relaxed outline-none focus:ring-2"
@@ -217,11 +124,7 @@ export default function StudyForm({
               type="number"
               min={2}
               value={maxMembers}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                setMaxMembers(v);
-                revalidate({ maxMembers: v });
-              }}
+              onChange={(e) => onChange({ maxMembers: Number(e.target.value) })}
               className={`h-11 w-32 ${errors.maxMembers ? "border-destructive" : ""}`}
             />
             {errors.maxMembers ? (
@@ -239,10 +142,7 @@ export default function StudyForm({
               </label>
               <DatePicker
                 value={enrollmentStart}
-                onChange={(d) => {
-                  setEnrollmentStart(d);
-                  revalidate({ enrollmentStart: d });
-                }}
+                onChange={(d) => onChange({ enrollmentStart: d })}
                 placeholder="시작일 선택"
                 showTime
               />
@@ -253,10 +153,7 @@ export default function StudyForm({
               </label>
               <DatePicker
                 value={enrollmentEnd}
-                onChange={(d) => {
-                  setEnrollmentEnd(d);
-                  revalidate({ enrollmentEnd: d });
-                }}
+                onChange={(d) => onChange({ enrollmentEnd: d })}
                 placeholder="마감일 선택"
                 showTime
               />
@@ -278,26 +175,16 @@ export default function StudyForm({
                 누구나 검색하고 참여할 수 있습니다
               </span>
             </div>
-            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+            <Switch checked={isPublic} onCheckedChange={(v) => onChange({ isPublic: v })} />
           </div>
 
           {/* 버튼 */}
           <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => navigate(-1)}
-            >
+            <Button type="button" variant="ghost" onClick={onCancel}>
               취소
             </Button>
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending
-                ? isEdit
-                  ? "수정 중..."
-                  : "등록 중..."
-                : isEdit
-                  ? "스터디 수정"
-                  : "스터디 등록"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? pendingLabel : submitLabel}
             </Button>
           </div>
         </form>
@@ -305,3 +192,5 @@ export default function StudyForm({
     </Card>
   );
 }
+
+export { type FieldErrors, type StudyCreateRequest };

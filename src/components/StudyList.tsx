@@ -101,7 +101,7 @@ export default function StudyList({ isbn }: StudyListProps) {
             <div className="text-muted-foreground mt-3 flex flex-wrap gap-4 text-xs">
               <span className="inline-flex items-center gap-1">
                 <UserIcon className="size-3.5" />
-                {study.creatorNickname}
+                {study.leaderNickname}
               </span>
               <span className="inline-flex items-center gap-1">
                 <UsersIcon className="size-3.5" />

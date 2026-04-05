@@ -21,7 +21,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -43,7 +42,7 @@ function StudyAccordion({
   const navigate = useNavigate();
 
   return (
-    <Accordion type="multiple" className="flex flex-col gap-2">
+    <Accordion className="flex flex-col gap-2">
       {studies.map((study) => {
         const {
           id,
@@ -178,7 +177,7 @@ function MyStudySection({
 }) {
   const { data, isLoading } = useQuery({
     queryKey: ["myStudies", role],
-    queryFn: () => fetchMyStudies(role),
+    queryFn: () => fetchMyStudies(role, 0),
   });
 
   return (
