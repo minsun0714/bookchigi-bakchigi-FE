@@ -118,14 +118,24 @@ function StudyAccordion({
                     상세보기
                   </Button>
                   {showEdit && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => navigate(`/studies/${id}/edit`)}
-                    >
-                      <SettingsIcon className="size-3.5" />
-                      수정
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(`/studies/${id}/edit`)}
+                      >
+                        <SettingsIcon className="size-3.5" />
+                        수정
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate(`/studies/${id}/members`)}
+                      >
+                        <UsersIcon className="size-3.5" />
+                        멤버 관리
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>

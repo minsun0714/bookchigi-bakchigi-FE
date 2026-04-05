@@ -98,6 +98,29 @@ export async function updateStudy(
   return res.data;
 }
 
+export async function fetchPendingMembers(
+  studyId: number,
+): Promise<StudyMember[]> {
+  const res = await client.get<StudyMember[]>(
+    `/studies/${studyId}/pending-members`,
+  );
+  return res.data;
+}
+
+export async function approveMember(
+  studyId: number,
+  userId: number,
+): Promise<void> {
+  await client.post(`/studies/${studyId}/members/${userId}/approve`);
+}
+
+export async function rejectMember(
+  studyId: number,
+  userId: number,
+): Promise<void> {
+  await client.post(`/studies/${studyId}/members/${userId}/reject`);
+}
+
 export async function joinStudy(studyId: number): Promise<void> {
   await client.post(`/studies/${studyId}/join`);
 }

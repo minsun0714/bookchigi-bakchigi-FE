@@ -8,6 +8,7 @@ import OAuthCallback from "@/pages/OAuthCallback";
 import StudyCreate from "@/pages/StudyCreate";
 import StudyDetail from "@/pages/StudyDetail";
 import StudyEdit from "@/pages/StudyEdit";
+import StudyMembers from "@/pages/StudyMembers";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/books/:isbn/studies/new" element={<StudyCreate />} />
         <Route path="/studies/:studyId" element={<StudyDetail />} />
         <Route path="/studies/:studyId/edit" element={<StudyEdit />} />
+        <Route path="/studies/:studyId/members" element={<StudyMembers />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
       </Routes>
